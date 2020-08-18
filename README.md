@@ -1,2 +1,4 @@
 # NPAtlas_website
-Custom HTML/JS/CSS for the NP Atlas website www.npatlas.org
+Reposistory for the new Dockerized deployment of the NP Atlas website www.npatlas.org.
+
+Custom HTML/CSS/JS are contained in the `public-html` folder, with modules being copied into the Joomla CMS.
