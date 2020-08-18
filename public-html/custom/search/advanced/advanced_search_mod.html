@@ -1,0 +1,475 @@
+<script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.19.2/axios.min.js"></script>
+<link href="https://mottie.github.io/tablesorter/css/theme.blue.css" rel="stylesheet">
+<link href="https://mottie.github.io/tablesorter/css/theme.dark.css" rel="stylesheet">
+<link href="https://mottie.github.io/tablesorter/css/theme.default.css" rel="stylesheet">
+<link href="https://mottie.github.io/tablesorter/css/theme.dropbox.css" rel="stylesheet">
+<link href="https://mottie.github.io/tablesorter/css/theme.green.css" rel="stylesheet">
+<link href="https://mottie.github.io/tablesorter/css/theme.grey.css" rel="stylesheet">
+<link href="https://mottie.github.io/tablesorter/css/theme.ice.css" rel="stylesheet">
+<link href="https://mottie.github.io/tablesorter/css/theme.black-ice.css" rel="stylesheet">
+<link href="https://mottie.github.io/tablesorter/addons/pager/jquery.tablesorter.pager.css" rel="stylesheet">
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+<script src="https://mottie.github.io/tablesorter/js/jquery.tablesorter.js"></script>
+<script src="https://mottie.github.io/tablesorter/js/jquery.tablesorter.widgets.js"></script>
+<script src="https://mottie.github.io/tablesorter/addons/pager/jquery.tablesorter.pager.js"></script>
+<style>
+.grid {
+  display: grid;
+  justify-content: space-evenly;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+}
+.grid div {
+    text-align: left;
+}
+</style>
+
+<link href="/custom/search/advanced/jquery.stickytable.min.css" rel="stylesheet" >
+<link rel="stylesheet" type="text/css" href="/custom/search/advanced/advancedSearch.css">
+<script type="text/javascript" src="/custom/common/xhr/bootstrapTypeahead.js"></script>
+<script src="https://cdn.jsdelivr.net/jquery.validation/1.16.0/jquery.validate.min.js"></script>
+<script src="/marvinjs/gui/lib/promise-1.0.0.min.js"></script>
+<script src="/marvinjs/js/marvinjslauncher.js"></script>
+<script src="/custom/common/xhr/common.js"></script>
+<script type="text/javascript" src="/custom/search/advanced/jquery.stickytable.js"></script>
+<script type="text/javascript" src="/custom/search/advanced/search.js"></script>
+
+<div id="popup" style="display: none">
+	<div class="wrapper" style= "height: 200px;width: 200px;">
+		<img src="/custom/common/img/gear.gif" />
+	</div>
+</div>
+
+<div id="dialogLoadingPageError" title="Error Occured" style="display: none">
+	<div class="wrapper errorDialog" >
+		<div>Error occured on loading page.</div>
+		<div><input type="button" id="btnClose" value= "Close" onclick="closeLoadingPageErrorPopup()" style="margin-top: 15px;"></div>
+	</div>
+</div>
+
+<div id="dialogSearchError" title="Error Occured" style="display: none">
+	<div class="wrapper errorDialog" >
+		<div>Error occured on performing search.</div>
+		<div><input type="button" id="btnClose" value= "Close" onclick="closeSearchErrorPopup()" style="margin-top: 15px;"></div>
+	</div>
+</div>
+
+<form id="advancedSearchForm">
+	<div class="basic_search_container container-fluid">
+		<div style="padding-top : 10px; display: inline;">
+			<label style="padding: 8px; display: inline;">Structure Search</label>
+			<label style="margin-right:10px; display: inline;">Yes</label><input type="radio" id="structureYesRadio" name="structureSearch" value="true" onclick="showMarvinEditor()" style="margin-top: 0px; margin-right:10px;">
+			<label style="margin-right:10px; display: inline;">No</label><input type="radio" checked="checked" id="structureNoRadio" name="structureSearch" value="false" onclick="hideMarvinEditor()" style= "margin-top: 0px; margin-right:10px;">
+		</div>
+		<div id="structureSearchDiv">
+			<div id="marvinjs" class="marvinjs" style="margin:15px;">
+				<iframe src="/marvinjs/editorws.html" class="sketch" id="sketch" width="100%"></iframe>
+			</div>
+			<div>
+				<fieldset id="basic_search_form_fieldset" style="margin-top: 15px;">
+					<legend style="margin-bottom: 5px;" >Search Type</legend>
+					<ul style=" margin-top: 0px; list-style-type: none; margin-left: 0px;">
+						<li>
+							<input type="radio" name="search_type" id="full_structure" value="FULL" checked>
+							<label for="full_structure">Full Structure</label>
+						</li>
+						<li>
+							<input type="radio" name="search_type" id="substructure" value="SUBSTRUCTURE">
+							<label for="substructure">Substructure</label>
+						</li>
+						<li >
+							<input type="radio" name="search_type" id="similarity" value="SIMILARITY">
+							<label for="similarity">Similarity</label>
+							<input name="threshold" id="threshold" class="threshold" type="number" step="0.01"  min="0" max="1" value="0.8" style="width: 60px;">
+							<label for="threshold">Threshold</label>
+						</li>
+						<li><input type="button" id="btnReset" value= "Reset" onclick="resetMarvinEditor()" style="margin-top: 15px;">
+						</li>
+					</ul>
+				</fieldset>
+			</div>
+		</div>
+				<table id="myTable" class=" table order-list">
+			<thead>
+				<tr>
+					<td style="border: 0px; width:15%">And/Or</td>
+					<td style="border: 0px; width:25%">Field</td>
+					<td style="border: 0px;width:15%">Operator</td>
+					<td style="border: 0px; width:30%">Value</td>
+				</tr>
+			</thead>
+			<tbody>
+				<tr id="row0">
+					<td style="border:0; width:15%">
+						<!--select id="gate0" name="selectgate0" class="required gateClassFirst" style="width:85%; background-color:#D9D9D9; height:30px; margin-bottom: 0px; " -->
+						<select id="gate0" name="selectgate0" class=" gateClass" >
+							<option  selected value="">Select</option>
+							<!--option  value="and">AND</option>
+							<option  value="or">OR</option>
+							<option  value="not">NOT</option -->
+						</select>
+
+					</td>
+					<td style="border: 0px; width:25%">
+				<!--select id="field0" name="selectField0" class="required fieldClass" style="width:85%; background-color:#D9D9D9; height:30px; margin-bottom: 0px;" onChange="updateField(this)" -->
+						<select id="field0" name="selectField0" class="fieldClass"  onChange="updateField(this)">
+                            <option selected value="">Select</option>
+                            <option value="compID">Compound ID</option>
+                            <option value="clusterID">Cluster ID</option>
+                            <option value="nodeID">Node ID</option>
+                            <option value="compName">Compound Name</option>
+                            <option value="compInchi">InChI</option>
+                            <option value="inchiKey">InChI Key</option>
+                            <option value="molFormula">Molecular Formula</option>
+                            <option value="molWt">Molecular Weight</option>
+                            <option value="molAccMass">Accurate Mass</option>
+                            <option value="m_plus_H">[M+H]&#x207a;</option>
+                            <option value="m_plus_Na">[M+Na]&#x207a;</option>
+                            <option value="smiles">SMILES</option>
+                            <option value="author">Reference Authors</option>
+                            <option value="year">Reference Year</option>
+                            <option value="volume">Reference Volume</option>
+                            <option value="issue">Reference Issue</option>
+                            <option value="pages">Reference Pages</option>
+                            <option value="doi">Reference DOI</option>
+                          	<option value="doi">Reference PMID</option>
+                            <option value="refTitle">Reference Title</option>
+                            <option value="journalTitle">Journal Title</option>
+                            <option value="genus">Genus</option>
+                            <option value="species">Species</option>
+                            <option value="originType">Origin Type</option>
+                            <option value="hasSynthesis">Compound has Synthesis</option>
+                            <option value="hasReassignment">Compound has Reassignment</option>
+                            <option value="hasMIBIG">Compound has MIBIG</option>
+                            <option value="hasGNPS">Compound has GNPS</option>
+                            <option value="C">Element Count C</option>
+                            <option value="N">Element Count N</option>
+                            <option value="H">Element Count H</option>
+                            <option value="O">Element Count O</option>
+                            <option value="CL">Element Count Cl</option>
+                            <option value="S">Element Count S</option>
+                            <option value="B">Element Count B</option>
+                            <option value="P">Element Count P</option>
+                            <option value="BR">Element Count Br</option>
+                            <option value="F">Element Count F</option>
+                            <option value="I">Element Count I</option>
+						</select>
+					</td>
+					<td style="border: 0px;width:15%">
+						<!--select id="operator0" name="selectOperator0" class="required operatorClass" style="width:85%; background-color:#D9D9D9; height:30px; margin-bottom: 0px;"-->
+						<select id="operator0" name="selectOperator0" class="operatorClass">
+							<option disabled selected value="">Select</option>
+							<option></option>
+
+						</select>
+					</td>
+					<td style="border: 0px; width:30%">
+						<div >
+							<input type="text" autocomplete=off name="value" id="value0" data-provide="typeahead" class="form-control typeahead twitter-typeahead valueClass" style="height:30px; width:100%; margin-bottom: 0px;position: relative;"/>
+						</div>
+					</td>
+					<td style="border: 0px; width:5%"><span id="btA0" class=" icon-plus" onclick="addRow(this)" style="cursor: pointer; margin-top: 10px; margin-right: 10px;"></span>
+											<span id="btD0" class="icon-remove" onclick="remRow(this)" style="cursor: pointer; margin-top: 10px;">
+					</td>
+				</tr>
+			</tbody>
+		</table>
+
+		<table id="myTableMobile">
+			<tr id="row0">
+				<td style="width: 100%;">
+					<table>
+						<tr>
+							<td>And/Or</td>
+							<td>
+								<select id="gate0" name="selectgate0" class=" gateClass">
+									<option  selected value="">Select</option>
+								</select>
+							</td>
+						</tr>
+						<tr>
+							<td>Field</td>
+							<td>
+								<select id="field0" name="selectField0" class=" fieldClass" onChange="updateField(this)">
+									<option selected value="">Select</option>
+									<option value="compID">Compound ID</option>
+									<option value="clusterID">Cluster ID</option>
+									<option value="nodeID">Node ID</option>
+									<option value="compName">Compound Name</option>
+									<option value="compInchi">InChI</option>
+									<option value="inchiKey">InChI Key</option>
+									<option value="molFormula">Molecular Formula</option>
+									<option value="molWt">Molecular Weight</option>
+									<option value="molAccMass">Accurate Mass</option>
+									<option value="m_plus_H">[M+H]&#x207a;</option>
+									<option value="m_plus_Na">[M+Na]&#x207a;</option>
+									<option value="smiles">SMILES</option>
+									<option value="author">Reference Authors</option>
+									<option value="year">Reference Year</option>
+									<option value="volume">Reference Volume</option>
+									<option value="issue">Reference Issue</option>
+									<option value="pages">Reference Pages</option>
+									<option value="doi">Reference DOI</option>
+                                  	<option value="pmid">Reference PMID</option>
+									<option value="refTitle">Reference Title</option>
+									<option value="journalTitle">Journal Title</option>
+									<option value="genus">Genus</option>
+									<option value="species">Species</option>
+									<option value="originType">Origin Type</option>
+                                    <option value="hasSynthesis">Compound has Synthesis</option>
+                                    <option value="hasReassignment">Compound has Reassignment</option>
+                                    <option value="hasMIBIG">Compound has MIBIG</option>
+                                    <option value="hasGNPS">Compound has GNPS</option>
+									<option value="C">Element Count C</option>
+									<option value="N">Element Count N</option>
+									<option value="H">Element Count H</option>
+									<option value="O">Element Count O</option>
+									<option value="CL">Element Count Cl</option>
+									<option value="S">Element Count S</option>
+									<option value="B">Element Count B</option>
+									<option value="P">Element Count P</option>
+									<option value="BR">Element Count Br</option>
+									<option value="F">Element Count F</option>
+									<option value="I">Element Count I</option>
+								</select>
+							</td>
+						</tr>
+						<tr>
+							<td>Operator</td>
+							<td><select id="operator0" name="selectOperator0" class=" operatorClass">
+									<option disabled selected value="">Select</option>
+									<option></option>
+                            </td>
+						</tr>
+						<tr>
+							<td>Value</td>
+							<td><input type="text" autocomplete=off name="value" id="value0" data-provide="typeahead" class="form-control typeahead twitter-typeahead valueClass" style="height:30px; width:100%; margin-bottom: 0px;position: relative;"/></td>
+						</tr>
+						<tr>
+							<td></td>
+							<td><span id="btA0" class=" icon-plus" onclick="addRow(this)" style="cursor: pointer;"></span><span id="btD0" class="icon-remove" onclick="remRow(this)" style="cursor: pointer; margin-left:5%;"></span></td>
+						</tr>
+					</table>
+				</td>
+			</tr>
+		</table>
+
+
+
+
+
+		<div style="display: flex;flex-direction: row-reverse;margin-right: 1%; padding-bottom: 1%;">
+			<input type="button" id="btn-reset" value="Reset" class="btn btn-primary" onclick="resetForm()" style="margin-right: 2%;margin-left: 2%; height: 27px;">
+			<input type="submit" id="btn-submit" value="Search" class="btn btn-primary">
+
+		</div>
+	</div>
+</form>
+
+<div id="errorCompoundID" style="display:none;"><label>Compound ID not found. Please refine your search</label></div>
+<div id="noCriteria" style="display:none;"><label>Please provide something to search.</label></div>
+<div id="searchQueryDiv" style= "margin-top: 15px; display:none;">
+	<input type="text" id = "searchQueryUserFormat"  class="field left" readonly="readonly">
+</div>
+<div id="zeroResultDiv" style="display:none;"><label><strong>No result found. Please refine your search.</strong></label></div>
+<div id="resultBlock">
+
+
+		<!--div id="page-nav" style=" margin-bottom : 20px; background-color : white;"></div -->
+		<!--div id ="totalResults" style="background-color: white;width: 250px;height: 30px; margin-top: 3px;"></div -->
+	<div id="exportDiv" style="height: 50px; margin-top: 3px; display: flex;flex-direction: row-reverse;">
+		<input type="button" id="ExportResults" style="white-space: normal;width: 125px;" value= "Download results to TSV file" onclick="exportResults()" class="btn btn-secondary">
+	</div>
+
+
+
+	<div style="margin:20px; margin-left:0;">
+		<label onclick="switchColumnsDisp()" style="font-weight: bold;margin: 0;margin-right: 20px;">Columns To be displayed </label>
+		<img id="upImg" src="/custom/search/advanced/up.jpg" style="margin-right : 20px;height: 20px; margin-top: 5px;cursor: pointer;" onclick='columnListRes("hide")'>
+		<img id="downImg" src="/custom/search/advanced/down.jpg" onclick='columnListRes("show")' style="height: 20px; margin-top: 5px; cursor: pointer;">
+		<!--label class="checkbox"><input type="checkbox"  id="checkAll" onclick="hideAllColumn()"> Check All</label -->
+		<label class="checkbox"><input type="checkbox" id="checkAll" checked onclick="hideAllColumn()" > Select All/Deselect All</label>
+	</div>
+
+	<div class="grid" id="columnList" style="background-color: white; margin-bottom : 20px;">
+      <div>
+	    <label class="checkbox"><input type="checkbox" id="checkbox1" checked onclick="hideColumn(this,3)"> Cluster ID</label>
+      </div>
+      <div>
+      	<label class="checkbox"><input type="checkbox" id="checkbox2" checked onclick="hideColumn(this,4)"> Node ID</label>
+      </div>
+      <div>
+      	<label class="checkbox"><input type="checkbox" id="checkbox3"  checked onclick="hideColumn(this,5)"> InChI</label>
+      </div>
+      <div>
+      	<label class="checkbox"><input type="checkbox" id="checkbox4"  checked onclick="hideColumn(this,6)"> InChI Key</label>
+      </div>
+      <div>
+      	<label class="checkbox"><input type="checkbox" id="checkbox5"  checked onclick="hideColumn(this,7)"> Molecular Formula</label>
+      </div>
+      <div>
+      	<label class="checkbox"><input type="checkbox" id="checkbox6"  checked onclick="hideColumn(this,8)"> Molecular Weight</label>
+      </div>
+      <div>
+      	<label class="checkbox"><input type="checkbox" id="checkbox7"  checked onclick="hideColumn(this,9)"> Accurate Mass</label>
+      </div>
+      <div>
+      	<label class="checkbox"><input type="checkbox" id="checkbox8"  checked onclick="hideColumn(this,10)"> [M+H]<sup>+</sup></label>
+      </div>
+      <div>
+      	<label class="checkbox"><input type="checkbox" id="checkbox9"  checked onclick="hideColumn(this,11)"> [M+Na]<sup>+</sup></label>
+      </div>
+      <div>
+      	<label class="checkbox"><input type="checkbox" id="checkbox10"  checked onclick="hideColumn(this,12)"> Smiles</label>
+      </div>
+      <div>
+      	<label class="checkbox"><input type="checkbox" id="checkbox11"  checked onclick="hideColumn(this,13)"> Reference Authors</label>
+      </div>
+      <div>
+      	<label class="checkbox"><input type="checkbox" id="checkbox12"  checked onclick="hideColumn(this,14)"> Journal Title</label>
+      </div>
+      <div>
+      	<label class="checkbox"><input type="checkbox" id="checkbox13"  checked onclick="hideColumn(this,15)"> Reference Year</label>
+      </div>
+      <div>
+      	<label class="checkbox"><input type="checkbox" id="checkbox14"  checked onclick="hideColumn(this,16)"> Reference Volume</label>
+      </div>
+      <div>
+      	<label class="checkbox"><input type="checkbox" id="checkbox15"  checked onclick="hideColumn(this,17)"> Reference Issue</label>
+      </div>
+      <div>
+      	<label class="checkbox"><input type="checkbox" id="checkbox17"  checked onclick="hideColumn(this,19)"> Reference DOI</label>
+      </div>
+      <div>
+      	<label class="checkbox"><input type="checkbox" id="checkbox18"  checked onclick="hideColumn(this,20)"> Reference PMID</label>
+      </div>
+      <div>
+      	<label class="checkbox"><input type="checkbox" id="checkbox20"  checked onclick="hideColumn(this,22)"> Genus</label>
+      </div>
+      <div>
+      	<label class="checkbox"><input type="checkbox" id="checkbox21"  checked onclick="hideColumn(this,23)"> Species</label>
+      </div>
+      <div>
+      	<label class="checkbox"><input type="checkbox" id="checkbox22" checked onclick="hideColumn(this,24)"> Origin Type</label>
+      </div>
+      <div>
+      	<label class="checkbox"><input type="checkbox" id="checkbox23" checked onclick="hideColumn(this,25)"> Reassignment?</label>
+      </div>
+      <div>
+      	<label class="checkbox"><input type="checkbox" id="checkbox24" checked onclick="hideColumn(this,26)"> Synthesis?</label>
+      </div>
+      <div>
+      	<label class="checkbox"><input type="checkbox" id="checkbox25" checked onclick="hideColumn(this,27)"> MIBiG?</label>
+      </div>
+      <div>
+      	<label class="checkbox"><input type="checkbox" id="checkbox26" checked onclick="hideColumn(this,28)"> GNPS?</label>
+      </div>
+	</div>
+
+	<div id="columnListMobile" style="background-color: white;  margin-bottom : 20px;display:none;">
+		<div style="display:flex;">
+			<div style="width: 50%;">
+				<label class="checkbox"><input type="checkbox" id="checkbox1" checked onclick="hideColumn(this,3)"> Cluster ID</label>
+				<label class="checkbox"><input type="checkbox" id="checkbox2" checked onclick="hideColumn(this,4)"> Node ID</label>
+				<label class="checkbox"><input type="checkbox" id="checkbox3"  checked onclick="hideColumn(this,5)"> InChI</label>
+				<label class="checkbox"><input type="checkbox" id="checkbox4"  checked onclick="hideColumn(this,6)"> InChI Key</label>
+				<label class="checkbox"><input type="checkbox" id="checkbox19"  checked onclick="hideColumn(this,21)"> Genus</label>
+				<label class="checkbox"><input type="checkbox" id="checkbox20"  checked onclick="hideColumn(this,22)"> Species</label>
+			</div>
+			<div style="width: 50%;">
+				<label class="checkbox"><input type="checkbox" id="checkbox5"  checked onclick="hideColumn(this,7)"> Molecular Formula</label>
+				<label class="checkbox"><input type="checkbox" id="checkbox6"  checked onclick="hideColumn(this,8)"> Molecular Weight</label>
+				<label class="checkbox"><input type="checkbox" id="checkbox7"  checked onclick="hideColumn(this,9)"> Accurate Mass</label>
+				<label class="checkbox"><input type="checkbox" id="checkbox8"  checked onclick="hideColumn(this,10)"> [M+H]<sup>+</sup></label>
+				<label class="checkbox"><input type="checkbox" id="checkbox9"  checked onclick="hideColumn(this,11)"> [M+Na]<sup>+</sup></label>
+				<label class="checkbox"><input type="checkbox" id="checkbox10"  checked onclick="hideColumn(this,12)"> Smiles</label>
+			</div>
+		</div>
+		<div style="display:flex;">
+			<div style="width: 50%;">
+				<label class="checkbox"><input type="checkbox" id="checkbox11"  checked onclick="hideColumn(this,13)"> Reference Authors</label>
+				<label class="checkbox"><input type="checkbox" id="checkbox12"  checked onclick="hideColumn(this,14)"> Journal Title</label>
+				<label class="checkbox"><input type="checkbox" id="checkbox13"  checked onclick="hideColumn(this,15)"> Reference Year</label>
+				<label class="checkbox"><input type="checkbox" id="checkbox14"  checked onclick="hideColumn(this,16)"> Reference Volume</label>
+			</div>
+			<div style="width: 50%;">
+				<label class="checkbox"><input type="checkbox" id="checkbox15"  checked onclick="hideColumn(this,17)"> Reference Issue</label>
+				<label class="checkbox"><input type="checkbox" id="checkbox16"  checked onclick="hideColumn(this,18)"> Reference Pages</label>
+				<label class="checkbox"><input type="checkbox" id="checkbox17"  checked onclick="hideColumn(this,19)"> Reference DOI</label>
+				<label class="checkbox"><input type="checkbox" id="checkbox18"  checked onclick="hideColumn(this,20)"> Reference Title</label>
+			</div>
+		</div>
+	</div>
+
+	<div class="pager" id="pager" style="text-align: left;">
+		<img src="https://mottie.github.io/tablesorter/addons/pager/icons/first.png" class="first"/>
+		<img src="https://mottie.github.io/tablesorter/addons/pager/icons/prev.png" class="prev"/>
+		<span class="pagedisplay"></span>
+		<img src="https://mottie.github.io/tablesorter/addons/pager/icons/next.png" class="next"/>
+		<img src="https://mottie.github.io/tablesorter/addons/pager/icons/last.png" class="last"/>
+		<label style="display: inline;">Select Page Size</label>
+		<select class="pagesize" style="width: 5%;" title="Select page size">
+			<option selected="selected" value="10">10</option>
+			<option value="20">20</option>
+			<option value="30">30</option>
+			<option value="40">40</option>
+		</select>
+		<label style="display: inline;margin-left:10px;">Select page number</label>
+		<select class="gotoPage" style="width: 5%;" title="Select page number"></select>
+	</div>
+
+	<div id="table-wrapper" class="sticky-table sticky-headers sticky-ltr-cells" style="background-color: white;">
+		<table id="demoTable" class="tablesorter" style="margin-top: 0;">
+			<thead>
+				<tr class="sticky-row">
+					<th class="sticky-cell">Compound ID</th>
+					<th class="sticky-cell">Compound Name</th>
+					<th >Cluster ID</th>
+					<th >Node ID</th>
+					<th >Inchi</th>
+					<th >Inchi Key</th>
+					<th >Molecular Formula</th>
+					<th >Molecular Weight</th>
+					<th >Accurate Mass</th>
+					<th >[M+H]<sup>+</sup></th>
+					<th>[M+Na]<sup>+</sup></th>
+					<th>Smiles</th>
+					<th>Isolation Reference</th>
+					<th>Reference ID</th>
+
+					<th>Reference Authors</th>
+					<th>Journal Title</th>
+					<th>Reference Year</th>
+					<th>Reference Volume</th>
+					<th>Reference Issue</th>
+					<th>Reference Pages</th>
+					<th>Reference DOI</th>
+					<th>Reference Title</th>
+					<th>Reference Type Name</th>
+					<th>Journal Abbrevation</th>
+
+					<th>Species</th>
+					<th>Genus</th>
+					<th>Origin Type</th>
+					<!--th>Compound has Reassignment</th>
+					<th>Reassignment Description</th -->
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td class="sticky-cell">10</td><td class="sticky-cell">10</td><td>10</td><td>10</td><td>10</td><td>10</td><td>10</td><td>10</td><td>10</td><td>10</td><td>10</td><td>10</td><td>10</td><td>10</td><td>10</td><td>10</td><td>10</td><td>10</td><td>10</td><td>10</td>
+				</tr>
+				<tr>
+					<td class="sticky-cell">20</td><td class="sticky-cell">20</td><td>20</td><td>20</td><td>20</td><td>20</td><td>20</td><td>20</td><td>20</td><td>20</td><td>20</td><td>20</td><td>20</td><td>20</td><td>20</td><td>20</td><td>20</td><td>20</td><td>20</td><td>20</td>
+				</tr>
+				<tr>
+					<td class="sticky-cell">10</td>
+					<td>10</td><td>10</td><td>10</td><td>10</td><td>10</td><td>10</td><td>10</td><td>10</td><td>10</td><td>10</td><td>10</td><td>10</td><td>10</td><td>10</td><td>10</td><td>10</td><td>10</td><td>10</td><td>10</td>
+				</tr>
+				<tr>
+					<td class="sticky-cell">20</td><td>20</td><td>20</td><td>20</td><td>20</td><td>20</td><td>20</td><td>20</td><td>20</td><td>20</td><td>20</td><td>20</td><td>20</td><td>20</td><td>20</td><td>20</td><td>20</td><td>20</td><td>20</td><td>20</td>
+				</tr>
+
+			</tbody>
+		</table >
+	</div>
+</div>

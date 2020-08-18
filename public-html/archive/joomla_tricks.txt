@@ -1,0 +1,19 @@
+AUTHOR: Gregoire Jacob
+
+Tutorial to change user registration form
+
+https://www.joomlashack.com/blog/joomla-how-to/how-to-simplify-default-registration-form-in-joomla-3/
+fix the links to the register, reset password and remind user name in login plugin:
+
+https://forum.joomla.org/viewtopic.php?t=324491
+<a href="<?php echo JRoute::_('index.php/register?view=remind'); ?>">
+<a href="<?php echo JRoute::_('index.php/register?view=reset'); ?>">
+
+https://stackoverflow.com/questions/20598320/edit-joomla-registration-admin-email
+change the user Mail
+
+For user reg
+ - overide languages
+ - modify /components/com_users/models/registration.php
+ line 184
+ - modify /components/com_users/controllers/registration.php

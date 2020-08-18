@@ -1,0 +1,220 @@
+.btn-primary {
+  background-color: #3399cc;
+}
+
+#explore_results {
+  background-color: white;
+  padding: 10px 10px 10px 10px;
+  max-width: 1180px;
+}
+
+#compound_info,
+#lit_info {
+  background-color: white;
+  padding: 10px 10px 10px 10px;
+  display: -ms-flexbox;
+  display: -webkit-flex;
+  display: flex;
+
+  -ms-flex-align: center;
+  -webkit-align-items: center;
+  -webkit-box-align: center;
+
+  align-items: center;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  /*background-color: white;*/
+  max-width: 1180px;
+  align-items: start;
+}
+
+#compound_info td,
+#lit_info td {
+  word-wrap: break-word;
+}
+
+#isolationReference {
+  padding-top: 5%;
+}
+
+.image-container {
+  margin-top: 10px;
+  margin-bottom: 30px;
+  display: inline-table;
+  cursor: pointer;
+}
+.image-container img {
+  background-color: transparent;
+  box-shadow: 2px 2px 8px #444;
+  transform: rotate(0deg);
+  -ms-transform: rotate(0deg); /* Internet Explorer */
+  -moz-transform: rotate(0deg); /* Firefox */
+  -webkit-transform: rotate(0deg); /* Safari and Chrome */
+  -o-transform: rotate(0deg); /* Opera */
+
+  -webkit-transition: -webkit-transform 0.2s linear 0s;
+  -moz-transition: -moz-transform 0.2s linear 0s;
+  -o-transition: -o-transform 0.2s linear 0s;
+  transition: transform 0.2s linear 0s;
+}
+
+.image-container img:hover {
+  background-color: white;
+  box-shadow: 2px 2px 8px #444;
+  transform: scale(1.05);
+  -ms-transform: scale(1.05); /* Internet Explorer */
+  -moz-transform: scale(1.05); /* Firefox */
+  -webkit-transform: scale(1.05); /* Safari and Chrome */
+  -o-transform: scale(1.05); /* Opera */
+
+  -webkit-transition: -webkit-transform 0.2s linear 0s;
+  -moz-transition: -moz-transform 0.2s linear 0s;
+  -o-transition: -o-transform 0.2s linear 0s;
+  transition: transform 0.2s linear 0s;
+}
+
+#loadingIcon,
+#dialogLoadingPageError,
+#dialogSearchError {
+  z-index: 2147483647;
+  position: fixed;
+  top: 0;
+  left: 0;
+  visibility: visible;
+  opacity: 1;
+  background-color: rgba(0, 0, 0, 0.5);
+  width: 100%;
+  height: 100%;
+}
+
+#loadingIcon .wrapper,
+#dialogLoadingPageError .wrapper {
+  margin-left: 0;
+  margin-top: 0;
+  top: 45%;
+  left: 45%;
+}
+
+.typeahead {
+  width: 46%;
+}
+
+.reassignment,
+.sythesis {
+  width: 100%;
+}
+
+.backgroundColName {
+  background: rgba(0, 0, 0, 0.1);
+  font-family: "roboto", "Helvetica", "Tahoma", "Geneva", "Arial", sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  border: 1px solid rgb(104, 104, 104);
+  border-collapse: collapse;
+  padding: 10px;
+  text-align: center;
+}
+
+.backgroundValue {
+  margin: 0;
+  font-family: "roboto", "Helvetica", "Tahoma", "Geneva", "Arial", sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  border: 1px solid rgb(104, 104, 104);
+  border-collapse: collapse;
+  padding: 10px;
+}
+
+.resultReassignmentCount {
+  background-color: rgba(0, 0, 0, 0.1);
+  text-align: center;
+  border: 1px solid rgb(104, 104, 104);
+  border-collapse: collapse;
+}
+
+.examImage {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+label {
+  cursor: text;
+}
+
+#structure_container {
+  width: 47%;
+}
+
+#compound_info_table {
+  width: 50%;
+}
+
+#compound_info_table_table {
+  max-width: 540px;
+  table-layout: fixed;
+  border: 0;
+}
+
+#isoRefCitLabel,
+#isoRefDOILabel,
+#isoRefPMIDLabel {
+  width: 15%;
+}
+#isoRefCitValue {
+  width: 85%;
+}
+#isoRefDOIValue,
+#isoRefPMIDValue {
+  width: 35%;
+}
+
+@media screen and (max-width: 760px) {
+  #structure_container,
+  #npalabel,
+  #compound_info_table,
+  #compNameLabel,
+  #npaid,
+  #compoundName {
+    width: 100%;
+  }
+  #npasubmit,
+  #btn-reset {
+    width: 40%;
+    margin-top: 10px;
+    margin-left: 0;
+  }
+  #compNameLabel {
+    margin-left: 0;
+  }
+  #isoRefCitLabel,
+  #isoRefDOILabel,
+  #isoRefPMIDLabel {
+    width: 34%;
+  }
+  #isoRefCitValue {
+    width: 66%;
+  }
+  #isoRefDOIValue,
+  #isoRefPMIDValue {
+    width: 34%;
+  }
+}
+
+@media screen and (max-width: 500px) {
+  #popup .wrapper {
+    width: 350px;
+    left: 68%;
+  }
+}
+
+@media screen and (max-width: 350px) {
+  #popup .wrapper {
+    width: 300px;
+    left: 68%;
+  }
+}
+
+.errorMsg {
+  text-align: center;
+}

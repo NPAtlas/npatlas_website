@@ -1,0 +1,130 @@
+.c3-event-rects {
+   display: none;
+}
+.vis-item.blue{
+	background-color: magenta;
+}
+.vis-item.orange{
+	background-color: orange;
+}
+.left{
+
+ width: 5%;
+ height: 200px;
+ --border: 1px solid black;
+}
+
+.internal{
+ width: 18.75%;
+ height: 100%;
+-- border: 1px solid black;
+ display: inline-block;
+ cursor: pointer;
+}
+
+.center{
+
+ width: 88.9%;
+ height: 200px;
+-- border: 1px solid black;
+ margin: 1px;
+ overflow: hidden;
+ /*will change this to hidden later to deny scolling to user*/
+ white-space: nowrap;
+}
+
+.right{
+
+ width: 5%;
+ height: 200px;
+ --border: 1px solid black;
+}
+
+#loadingIcon .wrapper {
+	width: 500px;
+	height: 550px;
+	margin: 0px;
+	padding: 0px;
+	position: fixed;
+	top: 50%;
+	left: 50%;
+	margin-left: -250px;
+	margin-top: -300px;
+	z-index: 102;
+}
+
+#loadingIcon, #dialogLoadingPageError, #dialogSearchError {
+	z-index: 2147483647;
+    position: fixed;
+    top: 0;
+    left: 0;
+    visibility: visible;
+    opacity: 1;
+    background-color: rgba(0, 0, 0, 0.5);
+    width: 100%;
+    height: 100%;
+}
+
+#IDcompTable, #orcidTable, #NamecompTable {
+	font-family: "roboto", "Helvetica", "Tahoma", "Geneva", "Arial", sans-serif;
+    font-weight: 400;
+    font-size: 1rem;
+    line-height: 1.5;
+	color: #686868;
+}
+
+.borderDiv {
+	border: solid 3px black;
+}
+
+#orchid{
+	width:50%;
+}
+
+#orchidLabel{
+	width: 40%;
+	margin: 0; margin-top: 4px;
+}
+#searchOrchidDiv{
+	display : flex;
+	width: 80%;
+}
+#parentSearchDiv{
+	display:flex; width: 100%;
+}
+#submitDiv{
+	display:flex;width: 20%;
+}
+#submitButton{
+	margin-left: 1%;margin-right: 12%;height: 28px;
+}
+#firstNameLabel{
+	width: 10%;margin: 0; margin-top: 4px;
+}
+#firstName, #lastName{
+	width:35%;
+}
+#searchNameDiv{
+	display:none; display:flex;width: 80%;
+}
+#lastNameLabel{
+	width: 10%;margin: 0; margin-top: 4px; margin-left:3%;
+}
+@media screen and (max-width: 768px) {
+	#orchid, #orchidLabel, #firstName, #lastName, #firstNameLabel, #lastNameLabel {
+		width: 100%;
+		margin: 0;
+	}
+	#submitButton, #resetButton {
+		width: 39%;
+		margin: 0;
+		margin-top: 10px;	
+		margin-bottom: 10px;		
+	}
+	#searchOrchidDiv, #parentSearchDiv, #submitDiv, #searchNameDiv{
+		display : block; width: 100%;
+	}
+	.internal{
+		width: 95%;
+	}	
+}

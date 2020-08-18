@@ -1,0 +1,14 @@
+# Dependencies
+marvinjs/
+piwik/
+joomla/
+webservices/
+
+# Data
+.DS_Store
+*.sql
+
+# Admin
+PROD.*
+db.env
+public-html/custom/common/xhr/php/

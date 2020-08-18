@@ -1,0 +1,424 @@
+<script src="https://cdn.jsdelivr.net/npm/vue@2.6.11"></script>
+<link
+  rel="stylesheet"
+  href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+  integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh"
+  crossorigin="anonymous"
+/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.19.2/axios.min.js"></script>
+<script type="text/javascript" src="/custom/common/xhr/d3.v4.min.js"></script>
+<script type="text/javascript" src="/custom/common/xhr/fisheye.js"></script>
+<script
+  type="text/javascript"
+  src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"
+></script>
+
+<div id="app" class="container-fluid">
+  <div id="popup" style="display: none;">
+    <div class="wrapper" style="height: 200px; width: 200px;">
+      <img src="/custom/common/img/gear.gif" />
+    </div>
+  </div>
+
+  <form id="clustersForm" class="container" action="#" method="get">
+    <div class="row align-items-center">
+      <div class="col-md-12 col-xl-3">
+        <label for="npaid" id="npalabel">NPAID:</label>
+        <input
+          type="text"
+          name="npaid"
+          id="npaid"
+          placeholder="NPA123456"
+          autocomplete="off"
+          v-model="form.npaid"
+          :disabled="form.cluster_id !== ''"
+        />
+      </div>
+
+      <div class="col-md-12 col-xl-3">
+        <label for="clusterID" id="clusterLabel">Cluster ID:</label>
+        <input
+          type="text"
+          name="clusterID"
+          id="clusterID"
+          placeholder="1"
+          autocomplete="off"
+          v-model="form.cluster_id"
+          :disabled="form.npaid !== ''"
+          data-provide="typeahead"
+        />
+      </div>
+
+      <div class="col-xl-6">
+        <div class="row">
+          <input
+            type="button"
+            id="npasubmit"
+            value="Submit"
+            class="btn btn-primary col"
+            @click="submitForm"
+          />
+          <input
+            type="button"
+            id="btn-reset"
+            value="Reset"
+            class="btn btn-primary col"
+            @click="resetForm"
+          />
+        </div>
+        <div class="row">
+          <input
+            type="button"
+            id="projectNode"
+            value="Project to Nodes"
+            class="btn btn-secondary col"
+            @click="projectNode"
+            :disabled="node_data.id === 0"
+          />
+          <input
+            type="button"
+            id="projectGlobal"
+            value="Project to Global"
+            class="btn btn-secondary col"
+            @click="projectGlobal"
+            :disabled="node_data.id === 0"
+          />
+        </div>
+      </div>
+    </div>
+  </form>
+  <div
+    id="error_msg"
+    style="color: red; background-color: white;"
+    v-show="message !== ''"
+    v-html="message"
+  ></div>
+  <div id="enterDetails" v-show="node_data.id === 0">
+    <h3 style="text-align: center;">
+      Please enter NPA ID or Cluster ID to see more details
+    </h3>
+    <img class="examImage" src="/custom/common/img/cluster_sample.JPG" />
+  </div>
+
+  <h3 id="nodeIDHeading" v-show="node_data.id !== 0">
+    Cluster {{this.node_data.id}}
+  </h3>
+  <hr id="horizontalLine" style="margin: 0;" />
+  <div id="chart" v-show="node_data.id !== 0">
+    <div id="pop-up" style="z-index: 100000;">
+      <div id="pop-up-title"></div>
+      <div id="pop-up-content">
+        <table>
+          <tr>
+            <td><div id="pop-img"></div></td>
+            <td><div id="pop-desc"></div></td>
+          </tr>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const instance = axios.create({
+    baseURL: "http://localhost/api/v1",
+    timeout: 10000,
+    headers: { "X-Api-Key": "eec687df-aa7e-46ff-b02a-c315fd06bb08" },
+  });
+  const fresh_node = {
+    id: 0,
+    nodes: [],
+    links: [],
+  };
+
+  var app = new Vue({
+    el: "#app",
+    data: {
+      form: { npaid: "", cluster_id: "" },
+      message: "",
+      node_data: { ...fresh_node },
+    },
+    methods: {
+      submitForm: function () {
+        this.message = "";
+        if (this.form.npaid !== "") {
+          instance
+            .get(`/compound/${this.form.npaid}/cluster`)
+            .then((resp) => {
+              let node_data = resp.data;
+              this.node_data.id = node_data.id;
+              this.node_data.nodes = node_data.nodes;
+              this.node_data.links = node_data.links;
+              displayNetwork(node_data, this.form.npaid, 0);
+              history.pushState(
+                { npaid: this.form.npaid },
+                `NPAID ${this.form.npaid}`,
+                `${location.href.split("?")[0]}?npaid=${this.form.npaid}`
+              );
+            })
+            .catch((err) => {
+              console.error(err);
+              this.message = `NPA${this.form.npaid} is either not in the Atlas or has no node data.`;
+            });
+        } else if (this.form.cluster_id !== "") {
+          instance
+            .get(`/cluster/${this.form.cluster_id}`)
+            .then((resp) => {
+              let node_data = resp.data;
+              this.node_data.id = node_data.id;
+              this.node_data.nodes = node_data.nodes;
+              this.node_data.links = node_data.links;
+              displayNetwork(node_data, 0, this.form.cluster_id);
+              history.pushState(
+                { clusterid: this.form.cluster_id },
+                `Cluster ID ${this.form.cluster_id}`,
+                `${location.href.split("?")[0]}?clusterid=${
+                  this.form.cluster_id
+                }`
+              );
+            })
+            .catch((err) => {
+              console.error(err);
+              this.message = `Cluster #${this.form.cluster_id} is either not in the Atlas or has no node data.`;
+            });
+        } else {
+          this.message = "Please enter valid data.";
+        }
+        this.$nextTick();
+      },
+      resetForm: function () {
+        this.form = { npaid: "", cluster_id: "" };
+        this.message = "";
+        this.node_data = { ...fresh_node };
+        history.pushState({}, "", location.href.split("?")[0]);
+      },
+      projectNode: function () {
+        window.location = `/joomla/index.php/explore/nodes?clusterid=${this.node_data.id}`;
+      },
+      projectGlobal: function () {
+        window.location = `/joomla/index.php/explore/global?clusterid=${this.node_data.id}`;
+      },
+    },
+    mounted() {
+      //Load Query Param
+      if (location.search !== "") {
+        const url = new URL(location);
+        const q_npaid = url.searchParams.get("npaid");
+        const q_cluster_id = url.searchParams.get("clusterid");
+        if (q_npaid !== null) {
+          let clean_npaid = parseInt(q_npaid.replace("NPA", ""));
+          if (clean_npaid !== NaN) {
+            this.form.npaid = clean_npaid;
+            this.submitForm();
+          }
+        } else if (q_cluster_id !== null) {
+          let clean_cluster_id = parseInt(q_cluster_id);
+          if (clean_cluster_id !== NaN) {
+            this.form.cluster_id = clean_cluster_id;
+            this.submitForm();
+          }
+        }
+      }
+      // Get necessary data
+      //   this.storedSearchResultArr = JSON.parse(
+      //     sessionStorage.getItem("basicSearchResults")
+      //   );
+    },
+  });
+
+  function getCurrentVersion() {
+    return new Promise(function (resolve, reject) {
+      userSelectedVersion_global = sessionStorage.getItem("selectedVersion");
+      if (!userSelectedVersion_global) {
+        var globalVersion = "/custom/common/xhr/versionConfig.json";
+        var xmlhttp = new XMLHttpRequest();
+        xmlhttp.onreadystatechange = function () {
+          if (this.readyState == 4 && this.status == 200) {
+            var obj = JSON.parse(this.responseText);
+            userSelectedVersion_global = obj["currentVersion"];
+            resolve(userSelectedVersion_global);
+          }
+        };
+        xmlhttp.open("GET", globalVersion, true);
+        xmlhttp.send();
+      } else resolve(userSelectedVersion_global);
+    });
+  }
+
+  function displayNetwork(graph, npaid) {
+    var compImagePath;
+    getCurrentVersion().then((version) => {
+      compImagePath = `/custom/versions/${version}/png/`;
+    });
+    var $ = jQuery;
+    if ($("#chart").css("display") == "none") {
+      $("#chart").show();
+    }
+    if (document.contains(document.getElementById("chart_svg"))) {
+      document.getElementById("chart_svg").remove();
+    }
+    var trans = [0, 0];
+    var scale = 1;
+
+    var svg = d3
+      .select("#chart")
+      .append("svg:svg")
+
+      .attr("pointer-events", "all")
+      .call(d3.zoom().on("zoom", redraw))
+      .attr("width", "100%")
+      .attr("height", "100%")
+      .attr("id", "chart_svg")
+      .append("svg:g")
+      .attr("background-color", "white");
+
+    var color = function (d) {
+      if (
+        d.title === `NPA${String(npaid).padStart(6, "0")}` ||
+        d.title === npaid
+      )
+        return "red";
+      else return "steelblue";
+    };
+
+    var simulation = d3
+      .forceSimulation()
+      .force(
+        "link",
+        d3
+          .forceLink()
+          .id(function (d) {
+            //return d.index;
+            return d.id;
+          })
+          .distance(10)
+      )
+      .force("charge", d3.forceManyBody().strength(-550))
+      .force(
+        "center",
+        d3.forceCenter(
+          document.body.clientWidth / 4,
+          document.body.clientHeight / 4
+        )
+      );
+
+    var link = svg
+      .append("g")
+      .attr("class", "links")
+      .selectAll("line")
+      .data(graph.links)
+      .enter()
+      .append("line")
+      .attr("stroke-width", function (d) {
+        return Math.sqrt(d.value);
+      });
+
+    var node = svg
+      .append("g")
+      .attr("class", "nodes")
+      .selectAll("circle")
+      .data(graph.nodes)
+      .enter()
+      .append("circle")
+      .attr("r", 5)
+      .attr("fill", function (d) {
+        return color(d);
+      })
+      .on("click", click)
+      .on("mouseover", mover)
+      .on("mouseout", mout);
+
+    var fisheye = d3.fisheye.circular().radius(200).distortion(2);
+    simulation.nodes(graph.nodes).on("tick", ticked);
+
+    simulation.force("link").links(graph.links);
+
+    function ticked() {
+      link
+        .attr("x1", function (d) {
+          return d.source.x;
+        })
+        .attr("y1", function (d) {
+          return d.source.y;
+        })
+        .attr("x2", function (d) {
+          return d.target.x;
+        })
+        .attr("y2", function (d) {
+          return d.target.y;
+        });
+
+      node.attr("transform", function (d) {
+        return "translate(" + d.x + "," + d.y + ")";
+      });
+    }
+
+    // trying to add new code for fisheye effect
+    svg.on("mousemove", function () {
+      /*
+			fisheye.focus(d3.mouse(this));
+
+			node.each(function(d) { d.fisheye = fisheye(d); })
+			  .attr("cx", function(d) { return d.fisheye.x; })
+			  .attr("cy", function(d) { return d.fisheye.y; })
+			  .attr("r", function(d) { return d.fisheye.z * 4.5; });
+
+			link.attr("x1", function(d) { return d.source.fisheye.x; })
+			  .attr("y1", function(d) { return d.source.fisheye.y; })
+			  .attr("x2", function(d) { return d.target.fisheye.x; })
+			  .attr("y2", function(d) { return d.target.fisheye.y; });
+		*/
+    });
+
+    function mover(d) {
+      var $ = jQuery;
+      $("#pop-up").fadeOut(100, function () {
+        // Popup content
+        $("#pop-up-title").html(d.title);
+        $("#pop-img").html(
+          '<img src="' +
+            compImagePath +
+            d.title +
+            '_hw300.png" height="100" width="100">'
+        );
+        $("#pop-desc").html(d.name);
+
+        var popLeft = d.x * scale + trans[0] + 20; //lE.cL[0] + 20;
+        var popTop = d.y * scale + trans[1] + 20; //lE.cL[1] + 70;
+        $("#pop-up").css({ left: popLeft, top: popTop });
+        $("#pop-up").fadeIn(100);
+      });
+    }
+
+    function mout(d) {
+      var $ = jQuery;
+      $("#pop-up").hide();
+    }
+
+    function click(d) {
+      window.location.href =
+        "/joomla/index.php/explore/compounds?npaid=" + d.title;
+    }
+
+    function redraw() {
+      //svg.attr("transform", d3.event.transform);
+      trans = [d3.event.transform.x, d3.event.transform.y];
+      scale = d3.event.transform.k;
+      svg.attr(
+        "transform",
+        "translate(" +
+          d3.event.transform.x +
+          "," +
+          d3.event.transform.y +
+          ") scale(" +
+          d3.event.transform.k +
+          ")"
+      );
+    }
+  }
+</script>
+<link
+  rel="stylesheet"
+  type="text/css"
+  href="/custom/explore/clusters/clusters.css"
+/>

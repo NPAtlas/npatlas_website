@@ -1,0 +1,22 @@
+label{
+    cursor: text;
+}
+#latestLabel, #viewVersionLabel{
+    font-weight: bold;
+}
+#latestLabel, #latestText, #viewVersionLabel, #viewVersionText{
+    display: inline-block;
+}
+#plainText1{
+    margin-top : 25px;
+    margin-bottom: 25px;
+}
+input[type="radio"] {
+    margin: 10px;
+}
+#latestDiv{
+    margin-bottom: 25px;
+}
+#matchingVersion{
+    display: none;
+}

@@ -1,0 +1,93 @@
+version: "3"
+
+services:
+  # traefik:
+  #   image: traefik:2.1
+  #   command:
+  #     - "--log.level=DEBUG"
+  #     - "--providers.docker"
+  #     - "--api.dashboard=true"
+  #     - "--accesslog"
+  #     - "--entrypoints.web.address=:80"
+  #     #- "--entrypoints.web.proxyProtocol.trustedIPs=127.0.0.1/32,96.54.173.75"
+  #     # - "--entrypoints.websecure.address=:443"
+  #     # - "--certificatesresolvers.myresolver.acme.email=jvansant@sfu.ca"
+  #     # - "--certificatesresolvers.myresolver.acme.storage=/etc/traefik/acme.json"
+  #     ## used during the challenge
+  #     # - "--certificatesresolvers.myresolver.acme.httpChallenge.entryPoint=websecure"
+  #     ## used during the challenge
+  #     #- "--certificatesresolvers.myresolver.acme.tlschallenge=true"
+  #     ## Staging for testing
+  #     #- "--certificatesresolvers.myresolver.acme.caServer=https://acme-staging-v02.api.letsencrypt.org/directory"
+  #   labels:
+  #     - "traefik.http.routers.api.entrypoints=web"
+  #     - "traefik.http.routers.api.rule=Host(`traefik.localhost`)"
+  #     - "traefik.http.routers.api.service=api@internal"
+  #     # - "traefik.http.routers.api.middlewares=auth"
+  #     # - "traefik.http.middlewares.auth.basicauth.users=test:$$apr1$$H6uskkkW$$IgXLP6ewTrSuBkTrqE8wj/"
+  #     # - "traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https"
+  #     # - "traefik.http.routers.http-catchall.rule=hostregexp(`{host:.+}`)"
+  #     # - "traefik.http.routers.http-catchall.entrypoints=web"
+  #     # - "traefik.http.routers.http-catchall.middlewares=redirect-to-https"
+  #   ports:
+  #     # The HTTP port
+  #     - "80:80"
+  #     # The HTTPS port
+  #     - "443:443"
+  #     # - "8080:8080"
+  #   volumes:
+  #     # So that Traefik can listen to the Docker events
+  #     - /var/run/docker.sock:/var/run/docker.sock
+  #   logging:
+  #     driver: "json-file"
+  #     options:
+  #       max-size: "200k"
+  #       max-file: "10"
+
+  webservices:
+    image: webservices:latest
+    build: ./webservices
+    volumes:
+      - ${PWD}/webservices/ws-config.xml:/usr/local/tomcat/.chemaxon/ws-config.xml
+    labels:
+      - "traefik.http.routers.webservice.entrypoints=web"
+      - "traefik.http.routers.webservice.rule=Host(`${DOMAIN?Variable DOMAIN not set}`) && PathPrefix(`/webservices2`)"
+
+  site:
+    build: .
+    image: joomla-site
+    restart: always
+    volumes:
+      - ./public-html:/var/www/html:cached
+      - ./sites-enabled:/etc/apache2/sites-enabled
+    environment:
+      - JOOMLA_DB_HOST=mysqlserver
+    env_file:
+      - ./db.env
+    labels:
+      - "traefik.http.routers.joomla.entrypoints=web"
+      - "traefik.http.routers.joomla.rule=Host(`${DOMAIN?Variable DOMAIN not set}`) && (PathPrefix(`/joomla`) || PathPrefix(`/custom`) || PathPrefix(`/marvinjs`)  || Path(`/`) || Path(`/robots.txt`))"
+      - "traefik.http.middlewares.joomla-gzip.compress=true"
+      - "traefik.http.routers.joomla.middlewares=joomla-gzip@docker"
+
+  # analytic:
+  #   image: matomo
+  #   volumes:
+  #     - /data/docker/matomo:/var/www/html
+  #   environment:
+  #     - MATOMO_DATABASE_HOST=mysql
+  #     - MATOMO_ENABLE_PROXY_URI_HEADER=yes
+  #     - VIRUAL_HOST=
+  #   env_file:
+  #     - ./db.env
+  #   labels:
+  #     - "traefik.http.routers.matomo.entrypoints=web"
+  #     - "traefik.http.routers.matomo.rule=Host(`${DOMAIN?Variable DOMAIN not set}`) && PathPrefix(`/piwik`)"
+  #     - "traefik.http.middlewares.matomo-path.stripprefix.prefixes=/piwik"
+  #     - "traefik.http.middlewares.matomo-path.stripprefix.forceslash=true"
+  #     - "traefik.http.routers.matomo.middlewares=matomo-path@docker"
+
+networks:
+  default:
+    external:
+      name: atlas_network

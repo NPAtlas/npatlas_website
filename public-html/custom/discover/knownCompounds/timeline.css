@@ -1,0 +1,194 @@
+#loadingIcon .wrapper {
+	width: 500px;
+	height: 550px;
+	margin: 0px;
+	padding: 0px;
+	position: fixed;
+	top: 50%;
+	left: 50%;
+	margin-left: -250px;
+	margin-top: -300px;
+	z-index: 102;
+}
+
+#loadingIcon, #dialogLoadingPageError, #dialogSearchError {
+	z-index: 2147483647;
+    position: fixed;
+    top: 0;
+    left: 0;
+    visibility: visible;
+    opacity: 1;
+    background-color: rgba(0, 0, 0, 0.5);
+    width: 100%;
+    height: 100%;
+}
+
+#imageDiv .imgWrapper {
+
+	margin: 0px;
+	padding: 0px;
+	position: fixed;
+	top: 50%;
+	
+	margin-left: -250px;
+	margin-top: -300px;
+	z-index: 102;
+}
+
+.left{
+
+ width: 5%;
+ height: 200px;
+ --border: 1px solid black;
+}
+
+.internal{
+ width: 18.75%;
+ height: 100%;
+-- border: 1px solid black;
+ display: inline-block;
+ cursor : pointer
+}
+
+.center{
+
+ width: 88.9%;
+ height: 200px;
+-- border: 1px solid black;
+ margin: 1px;
+ overflow: hidden;
+ /*will change this to hidden later to deny scolling to user*/
+ white-space: nowrap;
+}
+
+.right{
+
+ width: 5%;
+ height: 200px;
+ --border: 1px solid black;
+}
+
+#imageDiv{
+position: fixed;
+left: 0px;
+top: 0px;
+z-index: 2147483647;
+visibility: visible;
+opacity: 1;
+width: 100%;
+height: 100%;
+background-color: rgba(0, 0, 0, 0.5);
+}
+/*
+#imgWrapper{
+	top: 10%;
+    left: 30%;
+--	height: 600px;
+ 
+--	position: relative;
+}
+*/
+#close{
+	margin-left: 400px;
+    font-weight: bold;
+    font-size: 25px;
+    color: rgb(250, 250, 240);
+    visibility: inherit;
+    background: inherit;
+    border: none;
+    z-index: inherit;
+}
+
+.typeahead{
+	width : 20%;
+}
+/*
+.vis-item.green{
+	background-color: greenyellow;
+	 border-color: black;
+} */
+.vis-item.blue{
+	background-color: magenta;
+}
+.vis-item.orange{
+	background-color: orange;
+}
+.borderDiv {
+	border: solid 3px black;
+}
+
+#npaid{
+	width: 13%;
+	height: 35px;
+}
+
+#npalabel {
+	width: 7%; margin-top: 6px;margin: 0;
+}
+
+#compNameLabel {
+	width: 14%; margin-left: 30px;margin-right: 0;
+}
+
+#compoundName {
+	width: 40%;
+}
+#btn-reset{
+	margin-left: 2%;height: 27px;
+}
+
+#npasubmit {
+	margin-left: 2%; height: 27px;
+}
+#sketchContainer{
+ 	clear:both;
+	margin: 0px;
+	padding: 0px;
+}
+#popupLabelDiv, #popupCompNameLabelDiv{
+	width : 500px;
+}
+
+#imageDiv .imgWrapper{
+	 width: 600px;
+	 left: 50%;	 
+}
+@media screen and (max-width: 960px) {
+	#compoundName {
+		width: 35%;
+	}
+}
+
+@media screen and (max-width: 768px) {
+	#npaid, #compoundName, #npalabel, #compNameLabel {
+		width: 100%;
+		margin: 0;
+	}
+	#npasubmit, #btn-reset {
+		width: 39%;
+		margin: 0;
+		margin-top: 10px;		
+	}
+	.internal{
+		width: 95%;
+	}	
+}
+@media screen and (max-width: 500px) {
+	#imageDiv .imgWrapper, #popupLabelDiv, #popupCompNameLabelDiv{
+		width: 350px;
+		left: 68%;
+	}
+	#close{
+		margin-left: 260px;
+	}
+}
+
+@media screen and (max-width: 350px) {
+	#imageDiv .imgWrapper, #popupLabelDiv, #popupCompNameLabelDiv{
+		width: 300px;
+		left: 68%;
+	}
+	#close{
+		margin-left: 200px;
+	}
+}
