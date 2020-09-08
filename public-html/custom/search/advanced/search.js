@@ -988,7 +988,7 @@ function CBResults(response) {
           html += `<tr class="paginate">
           <td title="${npa_id}">
             <div class="compIDResTable">
-              <a href="/joomla/index.php/explore/compounds#npaid=${npa_id}">${npa_id}</a>
+              <a href="/joomla/index.php/explore/compounds?npaid=${npa_id}">${npa_id}</a>
             </div>
           </td>
           <td title="${dataArray[i].compound_names}">
@@ -998,7 +998,7 @@ function CBResults(response) {
           html += `<tr class="paginate">
           <td class="sticky-cell" title = "${npa_id}">
             <div class="compIDResTable">
-              <a href="/joomla/index.php/explore/compounds#npaid=${npa_id}">${npa_id}</a>
+              <a href="/joomla/index.php/explore/compounds?npaid=${npa_id}">${npa_id}</a>
             </div>
           </td>
           <td class="sticky-cell" title="${dataArray[i].compound_names}">

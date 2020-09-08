@@ -5,6 +5,23 @@ var webServiceResultArray = [];
 var basicSearchCurrentPageNo = "";
 var basicSearchTotalResults = 0;
 
+function PicToXMLString(divID, type, cb) {
+  var marvinSketcherInstance;
+  var p = MarvinJSUtil.getEditor(divID);
+
+  return p.then(
+    function (sketcherInstance) {
+      marvinSketcherInstance = sketcherInstance;
+      marvinSketcherInstance.exportStructure(type).then(function (source) {
+        cb(source);
+      });
+    },
+    function (error) {
+      alert("Molecule export failed:" + error);
+    }
+  );
+}
+
 var userSelectedVersion_global = "";
 async function getResult(
   smiles,
