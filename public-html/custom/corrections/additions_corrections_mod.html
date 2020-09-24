@@ -1,0 +1,820 @@
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <script
+      type="text/javascript"
+      src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"
+    ></script>
+
+    <script src="/custom/common/xhr/jquery.validate.min.js"></script>
+    <script src="/custom/common/xhr/additional-methods.min.js"></script>
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.min.css"
+    />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.js"></script>
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="/custom/corrections/corrections.css"
+    />
+
+    <script
+      type="text/javascript"
+      src="/custom/corrections/corrections.js"
+    ></script>
+    <script
+      type="text/javascript"
+      src="/custom/corrections/formValidation.js"
+    ></script>
+    <script src="/marvinjs/js/lib/rainbow/rainbow-custom.min.js"></script>
+    <script src="/marvinjs/gui/lib/promise-1.0.0.min.js"></script>
+    <script src="/marvinjs/js/marvinjslauncher.js"></script>
+    <script src="/custom/common/xhr/common.js"></script>
+    <style>
+      .button-deposit {
+        border-radius: 0.2rem;
+        color: #39c;
+        border: 0.2rem solid #39c;
+        padding: 0.5rem 1.5rem;
+        font-size: 3rem;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="popup" style="display: none">
+      <div class="wrapper" style="height: 200px; width: 200px">
+        <img src="/custom/common/img/gear.gif" />
+      </div>
+    </div>
+    <div id="message" title="Success">
+      <p>Thanks for submitting your feedback.</p>
+    </div>
+    <div id="correctionsFormDiv" class="basic_search_container container-fluid">
+      <h2>Deposit</h2>
+      <div id="headerSec">
+        <div id="depositText">
+          <p>
+            Do you have a new article to deposit to the NP Atlas?
+            <br />If so, use the Deposit button. <br />If you have changes or
+            corrections to existing NP Atlas data, please use the Additions and
+            Corrections section.
+          </p>
+        </div>
+        <div id="depositBox">
+          <a
+            href="/joomla/index.php/deposit"
+            title="deposit"
+            class="button-deposit"
+            style="background: white"
+            ><b>Deposit</b></a
+          >
+        </div>
+        <!--span style="width:30%;margin:auto;text-align:center;"> </span -->
+      </div>
+      <h2>Additions and Corrections</h2>
+      <form id="correctionsForm">
+        <!-- additions by Gregoire-->
+        <input
+          id="username"
+          type="hidden"
+          value="{source}<?php"
+          $user="JFactory::getUser();"
+          echo
+          $user-
+        />username; ?> {/source} >
+        <input
+          id="usermail"
+          type="hidden"
+          value="{source}<?php"
+          $user="JFactory::getUser();"
+          echo
+          $user-
+        />email; ?> {/source} >
+        <div style="padding-left: 15px">
+          <div class="row-fluid">
+            <label class="radio">
+              <input
+                type="radio"
+                name="correctionType"
+                style="margin-top: 7px"
+                class="inputRadioMain"
+                style="margin-right: 10px"
+                value="missingCompound"
+                onclick="showMissingCompound()"
+                checked="checked"
+              />Missing compound
+            </label>
+          </div>
+          <div class="row-fluid">
+            <label class="radio">
+              <input
+                type="radio"
+                name="correctionType"
+                style="margin-top: 7px"
+                class="inputRadioMain"
+                style="margin-right: 10px"
+                value="incorrectStructure"
+                onclick="showIncorrectStructure()"
+              />Incorrect structure
+            </label>
+          </div>
+          <div class="row-fluid">
+            <label class="radio">
+              <input
+                type="radio"
+                name="correctionType"
+                style="margin-top: 7px"
+                class="inputRadioMain"
+                style="margin-right: 10px"
+                value="incorrectCompName"
+                onclick="showIncorCompName()"
+              />Incorrect compound name
+            </label>
+          </div>
+          <div class="row-fluid">
+            <label class="radio">
+              <input
+                type="radio"
+                name="correctionType"
+                style="margin-top: 7px"
+                class="inputRadioMain"
+                style="margin-right: 10px"
+                value="incorrectRefer"
+                onclick="showIncorRefer()"
+              />Incorrect original isolation reference
+            </label>
+          </div>
+          <div class="row-fluid">
+            <label class="radio">
+              <input
+                type="radio"
+                name="correctionType"
+                style="margin-top: 7px"
+                class="inputRadioMain"
+                style="margin-right: 10px"
+                value="incorrectTax"
+                onclick="showIncorTax()"
+              />Incorrect original isolation taxonomy
+            </label>
+          </div>
+        </div>
+
+        <div id="divMisComp" class="subMenuMargin">
+          <div class="form-group">
+            <div class="row-fluid">
+              <div class="span12">
+                <span class="required"
+                  ><label for="compoundName" class="control-label"
+                    >Compound Name(s)</label
+                  ></span
+                >
+              </div>
+            </div>
+            <div class="row-fluid">
+              <div class="span6">
+                <input
+                  type="text"
+                  class="form-control abc"
+                  id="compoundName"
+                  name="compoundName"
+                />
+              </div>
+              <div class="span6" style="margin-top: 5px">
+                <label class="checkbox">
+                  <input
+                    type="checkbox"
+                    id="cmpNoNameChkBox"
+                    onclick="compoundNoNameCheckBox()"
+                    style="margin-top: 7px"
+                    name="compNoName"
+                  />Compound has no name
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <div class="row-fluid">
+              <div class="span12">
+                <span class="required"
+                  ><label for="missCompCitation"
+                    >doi (preferred) or citation</label
+                  ></span
+                >
+              </div>
+            </div>
+            <div class="row-fluid">
+              <div class="span6">
+                <input
+                  type="text"
+                  class="form-control"
+                  id="missCompCitation"
+                  name="missCompCitation"
+                />
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <div class="row-fluid">
+              <div class="span12">
+                <label for="compFormula">Compound formula(e)</label>
+              </div>
+            </div>
+            <div class="row-fluid">
+              <div class="span6">
+                <input type="text" class="form-control" id="compFormula" />
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <div class="row-fluid">
+              <div class="span12">
+                <label for="compStructure"
+                  >Compound structure(s) (SMILES or mol block)</label
+                >
+              </div>
+            </div>
+            <div class="row-fluid">
+              <div class="span6">
+                <textarea
+                  class="form-control"
+                  row-fluids="5"
+                  id="compStructure"
+                ></textarea>
+              </div>
+            </div>
+            <div class="row-fluid">
+              <div class="span12">
+                <label
+                  >Note: for multiple compounds, please place each SMILES/mol
+                  block on a new line</label
+                >
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <div class="row-fluid">
+              <div class="span6">
+                <label>or</label>
+              </div>
+            </div>
+          </div>
+          <div class="form-group">
+            <div class="row-fluid">
+              <div class="span12">
+                <div id="marvinjs" class="marvinjs">
+                  <iframe
+                    src="/marvinjs/editorws.html"
+                    class="sketch"
+                    id="sketch"
+                    width="100%"
+                  ></iframe>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="form-group">
+            <div class="row-fluid">
+              <div class="span12">
+                <label for="info">Other information</label>
+              </div>
+            </div>
+            <div class="row-fluid">
+              <div class="span6">
+                <input type="text" class="form-control" id="info" />
+              </div>
+            </div>
+          </div>
+        </div>
+        <div id="divIncorStructure" class="subMenuMargin">
+          <div class="form-group">
+            <div class="row-fluid">
+              <div class="span12">
+                <span class="required"
+                  ><label for="incorStrucNPAID">NPA ID</label></span
+                >
+              </div>
+            </div>
+            <div class="row-fluid">
+              <div class="span6">
+                <input
+                  type="text"
+                  class="form-control"
+                  id="incorStrucNPAID"
+                  name="incorStrucNPAID"
+                />
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <div class="row-fluid">
+              <div class="span12">
+                <span class="required"
+                  ><label for="incorStruCitation"
+                    >doi (preferred) or citation</label
+                  ></span
+                >
+              </div>
+            </div>
+            <div class="row-fluid">
+              <div class="span6">
+                <input
+                  type="text"
+                  class="form-control"
+                  id="incorStruCitation"
+                  name="incorStruCitation"
+                />
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <div class="row-fluid">
+              <div class="span12">
+                <label for="incorStruCompStructure"
+                  >Correct Compound structure (SMILES or mol block)</label
+                >
+              </div>
+            </div>
+            <div class="row-fluid">
+              <div class="span6">
+                <textarea
+                  class="form-control"
+                  row-fluids="5"
+                  id="incorStruCompStructure"
+                ></textarea>
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <div class="row-fluid">
+              <div class="span12">
+                <label>or</label>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <div class="row-fluid">
+              <div class="span12">
+                <div id="marvinjs" class="marvinjs">
+                  <iframe
+                    src="/marvinjs/editorws.html"
+                    class="sketch"
+                    id="sketch1"
+                    width="100%"
+                  ></iframe>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="form-group">
+            <div>
+              <label class="radio">
+                <input
+                  type="radio"
+                  style="margin-top: 7px"
+                  name="incorStrucRadio"
+                  onclick="document.getElementById('otherIncorStruText').readOnly='readOnly';"
+                  value="incorStrAtlas"
+                />Atlas structure incorrect
+              </label>
+            </div>
+            <div>
+              <label class="radio">
+                <input
+                  type="radio"
+                  style="margin-top: 7px"
+                  name="incorStrucRadio"
+                  onclick="document.getElementById('otherIncorStruText').readOnly='readOnly';"
+                  value="incorStrConfigMis"
+                />Configuration(s) missing/incorrect
+              </label>
+            </div>
+            <div>
+              <label class="radio">
+                <input
+                  type="radio"
+                  style="margin-top: 7px"
+                  name="incorStrucRadio"
+                  onclick="document.getElementById('otherIncorStruText').readOnly='readOnly';"
+                  value="incorStrEnanWrong"
+                />Wrong enantiomer
+              </label>
+            </div>
+            <div>
+              <label class="radio">
+                <input
+                  type="radio"
+                  name="incorStrucRadio"
+                  value="incorStruOther"
+                  onclick="document.getElementById('otherIncorStruText').removeAttribute('readOnly')"
+                  id="otherIncorStrRadio"
+                />Other
+              </label>
+              <div class="row-fluid">
+                <div class="span8">
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="otherIncorStruText"
+                    name="otherIncorStruText"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div id="divIncorCompName" class="subMenuMargin">
+          <div class="form-group">
+            <div class="row-fluid">
+              <div class="span12">
+                <span class="required"><label for="npaid">NPA ID</label></span>
+              </div>
+            </div>
+            <div class="row-fluid">
+              <div class="span6">
+                <input
+                  type="text"
+                  class="form-control"
+                  id="incorCompNameNPAID"
+                  name="incorCompNameNPAID"
+                />
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <div class="row-fluid">
+              <div class="span12">
+                <span class="required"
+                  ><label for="incorCompNameCitation"
+                    >doi (preferred) or citation for correct compound
+                    name</label
+                  ></span
+                >
+              </div>
+            </div>
+            <div class="row-fluid">
+              <div class="span6">
+                <input
+                  type="text"
+                  class="form-control"
+                  id="incorCompNameCitation"
+                  name="incorCompNameCitation"
+                />
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <div class="row-fluid">
+              <div class="span12">
+                <span class="required"
+                  ><label for="correctCompName"
+                    >Correct compound name(s)</label
+                  ></span
+                >
+              </div>
+            </div>
+            <div class="row-fluid">
+              <div class="span6">
+                <input
+                  type="text"
+                  class="form-control"
+                  id="correctCompName"
+                  name="correctCompName"
+                />
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <div class="row-fluid">
+              <div class="span12">
+                <label for="inCorrectCompoundName"
+                  >Incorrect compound name(s)</label
+                >
+              </div>
+            </div>
+            <div class="row-fluid">
+              <div class="span6">
+                <input
+                  type="text"
+                  class="form-control"
+                  id="inCorrectCompoundName"
+                />
+              </div>
+            </div>
+          </div>
+          <div class="form-group">
+            <div>
+              <label class="radio">
+                <input
+                  type="radio"
+                  style="margin-top: 7px"
+                  name="incorrectCompNameRadio"
+                  onclick="document.getElementById('otherIncorNameText').readOnly='readOnly';"
+                  value="incorNameMissing"
+                />Name missing
+              </label>
+            </div>
+            <div>
+              <label class="radio">
+                <input
+                  type="radio"
+                  style="margin-top: 7px"
+                  name="incorrectCompNameRadio"
+                  onclick="document.getElementById('otherIncorNameText').readOnly='readOnly';"
+                  value="incorNameValue"
+                />Name incorrect
+              </label>
+            </div>
+            <div>
+              <label class="radio">
+                <input
+                  type="radio"
+                  style="margin-top: 7px"
+                  name="incorrectCompNameRadio"
+                  onclick="document.getElementById('otherIncorNameText').readOnly='readOnly';"
+                  value="incorNameAddName"
+                />Additional name required
+              </label>
+            </div>
+            <div>
+              <label class="radio">
+                <input
+                  type="radio"
+                  style="margin-top: 7px"
+                  name="incorrectCompNameRadio"
+                  value="otherIncorName"
+                  onclick="document.getElementById('otherIncorNameText').removeAttribute('readOnly')"
+                  id="otherIncCompNameRadio"
+                />Other
+              </label>
+              <div class="row-fluid">
+                <div class="span8">
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="otherIncorNameText"
+                    name="otherIncorNameText"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div id="divIncorRefer" class="subMenuMargin">
+          <div class="form-group">
+            <div class="row-fluid">
+              <div class="span12">
+                <span class="required"
+                  ><label for="incorReferNPAID">NPA ID</label></span
+                >
+              </div>
+            </div>
+            <div class="row-fluid">
+              <div class="span6">
+                <input
+                  type="text"
+                  class="form-control"
+                  id="incorReferNPAID"
+                  name="incorReferNPAID"
+                />
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <div class="row-fluid">
+              <div class="span12">
+                <span class="required"
+                  ><label for="incorReferCitation"
+                    >doi (preferred) or citation for correct original isolation
+                    reference</label
+                  ></span
+                >
+              </div>
+            </div>
+            <div class="row-fluid">
+              <div class="span6">
+                <input
+                  type="text"
+                  class="form-control"
+                  id="incorReferCitation"
+                  name="incorReferCitation"
+                />
+              </div>
+            </div>
+          </div>
+          <div class="form-group">
+            <div>
+              <label class="radio">
+                <input
+                  type="radio"
+                  style="margin-top: 7px"
+                  name="incorrectReferRadio"
+                  onclick="document.getElementById('otherIncorRefer').readOnly='readOnly';"
+                  value="incorReport"
+                />Not the correct original isolation report
+              </label>
+            </div>
+            <div>
+              <label class="radio">
+                <input
+                  type="radio"
+                  style="margin-top: 7px"
+                  name="incorrectReferRadio"
+                  onclick="document.getElementById('otherIncorRefer').readOnly='readOnly';"
+                  value="referIsoConc"
+                />Isolated concurrently by two groups
+              </label>
+            </div>
+            <div>
+              <label class="radio">
+                <input
+                  type="radio"
+                  style="margin-top: 7px"
+                  name="incorrectReferRadio"
+                  onclick="document.getElementById('otherIncorRefer').readOnly='readOnly';"
+                  value="referAddIns"
+                />Additional instance of compound isolation
+              </label>
+            </div>
+            <div>
+              <label class="radio">
+                <input
+                  type="radio"
+                  style="margin-top: 7px"
+                  name="incorrectReferRadio"
+                  onclick="document.getElementById('otherIncorRefer').removeAttribute('readOnly')"
+                  value="referOther"
+                  id="incorReferOtherRadio"
+                />Other
+              </label>
+              <div class="row-fluid">
+                <div class="span8">
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="otherIncorRefer"
+                    name="otherIncorRefer"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div id="divIncorTax" class="subMenuMargin">
+          <div class="form-group">
+            <div class="row-fluid">
+              <div class="span12">
+                <span class="required"><label for="npaid">NPA ID</label></span>
+              </div>
+            </div>
+            <div class="row-fluid">
+              <div class="span6">
+                <input
+                  type="text"
+                  class="form-control"
+                  id="incorrectTaxNPAID"
+                  name="incorrectTaxNPAID"
+                />
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <div class="row-fluid">
+              <div class="span12">
+                <span class="required"
+                  ><label for="incorrectTaxCitation"
+                    >doi (preferred) or citation for correct original source
+                    taxonomy</label
+                  ></span
+                >
+              </div>
+            </div>
+            <div class="row-fluid">
+              <div class="span6">
+                <input
+                  type="text"
+                  class="form-control"
+                  id="incorrectTaxCitation"
+                  name="incorrectTaxCitation"
+                />
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <div class="row-fluid">
+              <div class="span12">
+                <span class="required"
+                  ><label for="correctGenus"
+                    >Correct genus and species</label
+                  ></span
+                >
+              </div>
+            </div>
+            <div class="row-fluid">
+              <div class="span6">
+                <input
+                  type="text"
+                  class="form-control"
+                  id="correctGenus"
+                  name="correctGenus"
+                />
+              </div>
+            </div>
+          </div>
+          <div class="form-group" id="radioWrongTax">
+            <div>
+              <label class="radio">
+                <input
+                  type="radio"
+                  style="margin-top: 7px"
+                  name="incorrectTaxRadio"
+                  onclick="document.getElementById('otherIncorTax').readOnly='readOnly'"
+                  value="incorIsolation"
+                />Not the correct original isolation genus/species
+              </label>
+            </div>
+            <div>
+              <label class="radio">
+                <input
+                  type="radio"
+                  style="margin-top: 7px"
+                  name="incorrectTaxRadio"
+                  onclick="document.getElementById('otherIncorTax').readOnly='readOnly'"
+                  value="isoConcurrent"
+                />Isolated concurrently from different sources
+              </label>
+            </div>
+            <div>
+              <label class="radio">
+                <input
+                  type="radio"
+                  style="margin-top: 7px"
+                  name="incorrectTaxRadio"
+                  onclick="document.getElementById('otherIncorTax').readOnly='readOnly';"
+                  value="addSource"
+                />Additional source organism
+              </label>
+            </div>
+            <div>
+              <label class="radio">
+                <input
+                  type="radio"
+                  style="margin-top: 7px"
+                  name="incorrectTaxRadio"
+                  value="incorTaxOther"
+                  onclick="document.getElementById('otherIncorTax').removeAttribute('readOnly')"
+                  id="incorTaxOtherRadio"
+                />Other
+              </label>
+              <div class="row-fluid">
+                <div class="span8">
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="otherIncorTax"
+                    name="otherIncorTax"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div style="margin-top: 30px">
+          <button
+            type="submit"
+            class="btn btn-primary"
+            id="submitButton"
+            style="margin-bottom: 1%"
+          >
+            Submit
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <!--div id="successfulDiv" style="display:none"><h2>Thanks for submitting your feedback.</h2></div -->
+  </body>
+</html>

@@ -355,3 +355,28 @@ function getCompoundImagePath() {
     });
   });
 }
+
+function sendMailForDeposit(userName, userMail, doi, orgArray, compArray, cb) {
+  var xhr_mail = new XMLHttpRequest();
+  xhr_mail.onreadystatechange = function () {
+    if (xhr_mail.readyState == 4 && xhr_mail.status == 200) {
+      var message = xhr_mail.responseText;
+      cb(message);
+    }
+  };
+  xhr_mail.open(
+    "POST",
+    "/custom/corrections/deposit/php/sendDepositMailPost.php",
+    true
+  );
+  xhr_mail.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+  xhr_mail.send(
+    JSON.stringify({
+      userName: userName,
+      userEmail: userMail,
+      DOI: doi,
+      orgArray: orgArray,
+      compArray: compArray,
+    })
+  );
+}
