@@ -711,7 +711,7 @@ function create_result_table(results, length, offset) {
       div1.setAttribute("id", "allButtons");
       var btn = document.createElement("BUTTON");
       btn.style.marginRight = "2%";
-      btn.setAttribute("class", "btn btn-secondary");
+      btn.setAttribute("class", "btn btn-light");
       var t = document.createTextNode("TSV");
 
       btn.setAttribute(
@@ -750,7 +750,7 @@ function create_result_table(results, length, offset) {
 
       var btn = document.createElement("a");
       btn.style.marginRight = "2%";
-      btn.setAttribute("class", "btn btn-secondary");
+      btn.setAttribute("class", "btn btn-light");
       var t = document.createTextNode("MOL");
       btn.setAttribute("href", `/api/v1/compound/${npa_id}/mol?encode=file`);
       btn.setAttribute("download", `${npa_id}.mol`);
@@ -759,7 +759,7 @@ function create_result_table(results, length, offset) {
 
       var btn = document.createElement("BUTTON");
       btn.style.marginRight = "2%";
-      btn.setAttribute("class", "btn btn-secondary");
+      btn.setAttribute("class", "btn btn-light");
       var t = document.createTextNode("PNG");
       var imgData =
         "/custom/versions/" + currentVersion + "/png/" + npa_id + "_hw500.png";
@@ -784,7 +784,7 @@ function create_result_table(results, length, offset) {
       div1.setAttribute("id", "GlobalButton");
       var btn = document.createElement("a");
       btn.style.marginRight = "2%";
-      btn.setAttribute("class", "btn btn-secondary");
+      btn.setAttribute("class", "btn btn-light");
       var t = document.createTextNode("Global View");
 
       btn.setAttribute(
