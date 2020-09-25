@@ -22,7 +22,7 @@
   /*overflow: hidden;*/
 --  min-width: 600px;
   max-width: 600px;
-  height: 600px;  
+  height: 600px;
   border: 1px solid darkgray;
 
 }
@@ -47,14 +47,14 @@
   background: #F2F1F0;
   border: 0;
   color: grey;
-  
+
   font: inherit;
   line-height: normal;
   overflow: visible;
   padding: 0;
   margin-left: 390px;
-  -webkit-appearance: button; 
-  -webkit-user-select: none; 
+  -webkit-appearance: button;
+  -webkit-user-select: none;
      -moz-user-select: none;
       -ms-user-select: none;
 } */
@@ -87,7 +87,6 @@
 
 .basic_search_form_outer li{
   display: flex;
-  flex-wrap: wrap;
   align-items: flex-start;
   align : left;
   vertical-align: middle;
@@ -316,7 +315,7 @@ transition: transform 0.2s linear 0s;
 	.resultImage{
 		width: 350px;
 	--	margin-left: 2%;
-		margin-top: 20%;		
+		margin-top: 20%;
 	}
 	#marvin_popup_image{
 		width: 500px;
@@ -331,7 +330,7 @@ transition: transform 0.2s linear 0s;
 	.resultImage{
 		width: 300px;
 	--	margin-left: 2%;
-		margin-top: 20%;		
+		margin-top: 20%;
 	}
 	#marvin_popup_image{
 		width: 500px;
@@ -339,7 +338,7 @@ transition: transform 0.2s linear 0s;
 	}
 }
 
-@media screen and (max-width: 768px) {	
+@media screen and (max-width: 768px) {
 	#basic_search_form{
 		margin-left:0;
 	}
@@ -376,7 +375,7 @@ transition: transform 0.2s linear 0s;
 		left: 68%;
 	}
 }
-@media screen and (max-width: 400px) {	
+@media screen and (max-width: 400px) {
 
 	#btn-reset{
 		margin-left: 50%;

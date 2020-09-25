@@ -14,8 +14,8 @@
 ></script>
 
 <div id="app" class="container-fluid">
-  <div id="popup" style="display: none;">
-    <div class="wrapper" style="height: 200px; width: 200px;">
+  <div id="popup" style="display: none">
+    <div class="wrapper" style="height: 200px; width: 200px">
       <img src="/custom/common/img/gear.gif" />
     </div>
   </div>
@@ -71,7 +71,7 @@
             type="button"
             id="projectNode"
             value="Project to Nodes"
-            class="btn btn-secondary col"
+            class="btn btn-light col"
             @click="projectNode"
             :disabled="node_data.id === 0"
           />
@@ -79,7 +79,7 @@
             type="button"
             id="projectGlobal"
             value="Project to Global"
-            class="btn btn-secondary col"
+            class="btn btn-light col"
             @click="projectGlobal"
             :disabled="node_data.id === 0"
           />
@@ -89,12 +89,12 @@
   </form>
   <div
     id="error_msg"
-    style="color: red; background-color: white;"
+    style="color: red; background-color: white"
     v-show="message !== ''"
     v-html="message"
   ></div>
   <div id="enterDetails" v-show="node_data.id === 0">
-    <h3 style="text-align: center;">
+    <h3 style="text-align: center">
       Please enter NPA ID or Cluster ID to see more details
     </h3>
     <img class="examImage" src="/custom/common/img/cluster_sample.JPG" />
@@ -103,9 +103,9 @@
   <h3 id="nodeIDHeading" v-show="node_data.id !== 0">
     Cluster {{this.node_data.id}}
   </h3>
-  <hr id="horizontalLine" style="margin: 0;" />
+  <hr id="horizontalLine" style="margin: 0" />
   <div id="chart" v-show="node_data.id !== 0">
-    <div id="pop-up" style="z-index: 100000;">
+    <div id="pop-up" style="z-index: 100000">
       <div id="pop-up-title"></div>
       <div id="pop-up-content">
         <table>
