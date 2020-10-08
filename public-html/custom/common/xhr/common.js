@@ -1,5 +1,6 @@
 // Constant for defining host
-var ws_host = "http://localhost";
+var ws_host = "https://www.npatlas.org";
+// var ws_host = "http://localhost";
 
 var webServiceResultArray = [];
 var basicSearchCurrentPageNo = "";
@@ -173,22 +174,7 @@ function buildParamsWebServiceCall(
   }
   return params;
 }
-function PicToXMLString(divID, type, cb) {
-  var marvinSketcherInstance;
-  var p = MarvinJSUtil.getEditor(divID);
 
-  return p.then(
-    function (sketcherInstance) {
-      marvinSketcherInstance = sketcherInstance;
-      marvinSketcherInstance.exportStructure(type).then(function (source) {
-        cb(source);
-      });
-    },
-    function (error) {
-      alert("Molecule export failed:" + error);
-    }
-  );
-}
 // to send mail from correction page
 function sendMail(
   correctionsData,
@@ -205,19 +191,21 @@ function sendMail(
       jQuery(divID).hide();
       var message = xhr_mail.responseText;
       console.log(message);
-      cb(message);
+      cb(200);
     } else if (xhr_mail.readyState == 4 && xhr_mail.status == 400) {
       cb(400);
     }
   };
-  xhr_mail.open("POST", "/custom/corrections/php/sendMailPost.php", true);
+  xhr_mail.open("POST", "/api/ext/emailer/correction/", true);
   xhr_mail.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
   xhr_mail.send(
     JSON.stringify({
-      correctionsJSON: JSON.stringify(correctionsData),
-      userName: userName,
-      userEmail: userEmail,
-      structurePicture: structurePicture,
+      username: userName,
+      email: userEmail,
+      data: {
+        structurePicture: structurePicture,
+        correctionsJSON: correctionsData,
+      },
     })
   );
 }
@@ -360,23 +348,21 @@ function sendMailForDeposit(userName, userMail, doi, orgArray, compArray, cb) {
   var xhr_mail = new XMLHttpRequest();
   xhr_mail.onreadystatechange = function () {
     if (xhr_mail.readyState == 4 && xhr_mail.status == 200) {
-      var message = xhr_mail.responseText;
-      cb(message);
+      var status = xhr_mail.status;
+      cb(status);
     }
   };
-  xhr_mail.open(
-    "POST",
-    "/custom/corrections/deposit/php/sendDepositMailPost.php",
-    true
-  );
+  xhr_mail.open("POST", "/api/ext/emailer/deposit/", true);
   xhr_mail.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
   xhr_mail.send(
     JSON.stringify({
-      userName: userName,
-      userEmail: userMail,
-      DOI: doi,
-      orgArray: orgArray,
-      compArray: compArray,
+      username: userName,
+      email: userMail,
+      data: {
+        DOI: doi,
+        orgArray: orgArray,
+        compArray: compArray,
+      },
     })
   );
 }
