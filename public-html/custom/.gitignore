@@ -1,9 +1,0 @@
-# Config files
-common/xhr/php/DBconfig.ini
-
-# Versioning Data
-versions/*/
-
-# Corrections and Depositions JSON data
-corrections/json/
-corrections/deposit/json/

@@ -1,5 +1,0 @@
-./public-html
-./webservices
-./*.sql
-*.yml
-Dockerfile

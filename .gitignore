@@ -1,14 +1,8 @@
-# Dependencies
-marvinjs/
-piwik/
-joomla/
-webservices/
+docker_volumes/
 
 # Data
 .DS_Store
 *.sql
 
 # Admin
-PROD.*
-db.env
-public-html/custom/common/xhr/php/
+*.env

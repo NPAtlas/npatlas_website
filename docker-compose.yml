@@ -1,93 +1,87 @@
 version: "3"
 
 services:
-  # traefik:
-  #   image: traefik:2.1
-  #   command:
-  #     - "--log.level=DEBUG"
-  #     - "--providers.docker"
-  #     - "--api.dashboard=true"
-  #     - "--accesslog"
-  #     - "--entrypoints.web.address=:80"
-  #     #- "--entrypoints.web.proxyProtocol.trustedIPs=127.0.0.1/32,96.54.173.75"
-  #     # - "--entrypoints.websecure.address=:443"
-  #     # - "--certificatesresolvers.myresolver.acme.email=jvansant@sfu.ca"
-  #     # - "--certificatesresolvers.myresolver.acme.storage=/etc/traefik/acme.json"
-  #     ## used during the challenge
-  #     # - "--certificatesresolvers.myresolver.acme.httpChallenge.entryPoint=websecure"
-  #     ## used during the challenge
-  #     #- "--certificatesresolvers.myresolver.acme.tlschallenge=true"
-  #     ## Staging for testing
-  #     #- "--certificatesresolvers.myresolver.acme.caServer=https://acme-staging-v02.api.letsencrypt.org/directory"
-  #   labels:
-  #     - "traefik.http.routers.api.entrypoints=web"
-  #     - "traefik.http.routers.api.rule=Host(`traefik.localhost`)"
-  #     - "traefik.http.routers.api.service=api@internal"
-  #     # - "traefik.http.routers.api.middlewares=auth"
-  #     # - "traefik.http.middlewares.auth.basicauth.users=test:$$apr1$$H6uskkkW$$IgXLP6ewTrSuBkTrqE8wj/"
-  #     # - "traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https"
-  #     # - "traefik.http.routers.http-catchall.rule=hostregexp(`{host:.+}`)"
-  #     # - "traefik.http.routers.http-catchall.entrypoints=web"
-  #     # - "traefik.http.routers.http-catchall.middlewares=redirect-to-https"
-  #   ports:
-  #     # The HTTP port
-  #     - "80:80"
-  #     # The HTTPS port
-  #     - "443:443"
-  #     # - "8080:8080"
-  #   volumes:
-  #     # So that Traefik can listen to the Docker events
-  #     - /var/run/docker.sock:/var/run/docker.sock
-  #   logging:
-  #     driver: "json-file"
-  #     options:
-  #       max-size: "200k"
-  #       max-file: "10"
-
-  webservices:
-    image: webservices:latest
-    build: ./webservices
-    volumes:
-      - ${PWD}/webservices/ws-config.xml:/usr/local/tomcat/.chemaxon/ws-config.xml
-    labels:
-      - "traefik.http.routers.webservice.entrypoints=web"
-      - "traefik.http.routers.webservice.rule=Host(`${DOMAIN?Variable DOMAIN not set}`) && PathPrefix(`/webservices2`)"
-
-  site:
-    build: .
-    image: joomla-site
+  traefik:
+    image: traefik:2.2
     restart: always
+    command:
+      --api.insecure=true
+      --providers.docker
+      --entryPoints.web.address=:80
+      --entryPoints.websecure.address=:443
+      --certificatesResolvers.le.acme.email=jvansant@sfu.ca
+      --certificatesResolvers.le.acme.storage=/acme/acme.json
+      --certificatesResolvers.le.acme.tlsChallenge=true
+      --entrypoints.web.http.redirections.entryPoint.to=websecure
+      --entrypoints.web.http.redirections.entryPoint.scheme=https
+      # --log.level=DEBUG
+      # --certificatesResolvers.le.acme.caServer=https://acme-staging-v02.api.letsencrypt.org/directory
+    ports:
+      # The HTTP port
+      - "80:80"
+      # The HTTPS port
+      - "443:443"
+       # The Web UI enabled by --api.insecure=true
+      - "8080:8080"
     volumes:
-      - ./public-html:/var/www/html:cached
-      - ./sites-enabled:/etc/apache2/sites-enabled
+      # So that Traefik can listen to the Docker events
+      - /var/run/docker.sock:/var/run/docker.sock
+      - "./docker_volumes/acme/:/acme/"
     environment:
-      - JOOMLA_DB_HOST=mysqlserver
-    env_file:
-      - ./db.env
+      - HTTP_PROXY=http://bby-nsx-proxy.its.sfu.ca:8080
+      - HTTPS_PROXY=http://bby-nsx-proxy.its.sfu.ca:8080
+      - NO_PROXY=www.npatlas.org,127.0.0.0/8,172.24.0.0/8
+
+  # separate static file server
+  static:
+    image: nginx
+    restart: always
+    # pass location of static files
+    volumes:
+      - "./static_deploy:/usr/share/nginx/html/static"
     labels:
-      - "traefik.http.routers.joomla.entrypoints=web"
-      - "traefik.http.routers.joomla.rule=Host(`${DOMAIN?Variable DOMAIN not set}`) && (PathPrefix(`/joomla`) || PathPrefix(`/custom`) || PathPrefix(`/marvinjs`)  || Path(`/`) || Path(`/robots.txt`))"
-      - "traefik.http.middlewares.joomla-gzip.compress=true"
-      - "traefik.http.routers.joomla.middlewares=joomla-gzip@docker"
+      - traefik.http.routers.static.rule=Host(`www.npatlas.org`)&&PathPrefix(`/static`)
+      - traefik.http.routers.static.tls=true
+      - traefik.http.routers.static.tls.certresolver=le
 
-  # analytic:
-  #   image: matomo
-  #   volumes:
-  #     - /data/docker/matomo:/var/www/html
-  #   environment:
-  #     - MATOMO_DATABASE_HOST=mysql
-  #     - MATOMO_ENABLE_PROXY_URI_HEADER=yes
-  #     - VIRUAL_HOST=
-  #   env_file:
-  #     - ./db.env
-  #   labels:
-  #     - "traefik.http.routers.matomo.entrypoints=web"
-  #     - "traefik.http.routers.matomo.rule=Host(`${DOMAIN?Variable DOMAIN not set}`) && PathPrefix(`/piwik`)"
-  #     - "traefik.http.middlewares.matomo-path.stripprefix.prefixes=/piwik"
-  #     - "traefik.http.middlewares.matomo-path.stripprefix.forceslash=true"
-  #     - "traefik.http.routers.matomo.middlewares=matomo-path@docker"
+  api:
+    image: npatlas_api:0.0.11
+    restart: always
+    env_file:
+      - api.env
+    labels:
+      - traefik.http.routers.atlas-api.rule=Host(`www.npatlas.org`)&&PathPrefix(`/api`)
+      - traefik.http.routers.atlas-api.tls=true
+      - traefik.http.routers.atlas-api.tls.certresolver=le
 
-networks:
-  default:
-    external:
-      name: atlas_network
+  # Dont expose ports - no auth
+  redis:
+    image: redis
+    # Enable persistent data
+    volumes:
+      - "./docker_volumes/redis:/data"
+    command: ["redis-server", "--appendonly", "yes"]
+
+
+  marvinws:
+    image: marvinws:latest
+    restart: always
+    labels:
+      - "traefik.http.routers.webservice.rule=Host(`www.npatlas.org`)&&PathPrefix(`/webservices2`)"
+      - "traefik.http.middlewares.wsstrip.stripprefix.prefixes=/webservices2"
+      - traefik.http.routers.webservice.middlewares=wsstrip@docker
+      - traefik.http.routers.webservice.tls=true
+      - traefik.http.routers.webservice.tls.certresolver=le
+
+  app:
+    image: npatlas:2.0.6
+    restart: always
+    env_file:
+      - app.env
+    # Persistent SQLite DB
+    volumes:
+        - "./db:/usr/src/app/db"
+    labels:
+      - traefik.http.routers.atlas.rule=Host(`www.npatlas.org`)&&PathPrefix(`/`)
+      - traefik.http.routers.atlas.tls=true
+      - traefik.http.routers.atlas.tls.certresolver=le
